@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Redirect</title>
+    <script>
+        // Function to redirect based on browser language
+        function redirectBasedOnLanguage() {
+            const userLang = navigator.language || navigator.userLanguage; // Get user's browser language
+            // Check user's language and redirect accordingly
+            if (userLang.startsWith('es')) {
+                window.location.href = 'co2-calculator-es.html'; // Redirect to Spanish page
+            } else if (userLang.startsWith('zh')) {
+                window.location.href = 'co2-calculator-zh.html'; // Redirect to Chinese page
+            } else {
+                // For any other language, redirect to English page
+                window.location.href = 'co2-calculator-en.html'; // Redirect to English page
+            }
+        }
+
+        // Redirect the user as soon as the page loads
+        redirectBasedOnLanguage();
+    </script>
+</head>
+<body>
+    <!-- Display a message while redirecting -->
+    <p>Redirecting...</p>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Emisiones de CO2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+        }
+        .cow-img {
+            width: 50px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Calculadora de Emisiones de CO2</h2>
+    <label for="miles">Ingrese las millas de vuelo:</label>
+    <input type="number" id="miles" name="miles">
+    
+    <label for="model">Seleccione el modelo de avión:</label>
+    <select id="model">
+        <option value="737">Boeing 737</option>
+        <option value="777">Boeing 777</option>
+        <option value="787">Boeing 787 Dreamliner</option>
+        <option value="767">Boeing 767</option>
+        <option value="A320">Airbus A320</option>
+        <option value="A321">Airbus A321</option>
+        <option value="A330">Airbus A330</option>
+        <option value="A350">Airbus A350</option>
+        <option value="A380">Airbus A380</option>
+    </select>
+
+    <button onclick="calculateEmissions()">Calcular</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    function calculateEmissions() {
+        const miles = document.getElementById('miles').value;
+        const selectedModel = document.getElementById('model').value;
+
+        // Emisiones de CO2 por modelo de avión
+        const co2EmissionsPerModel = {
+            '737': 47.85, // kg de CO2 por milla
+            '777': 55.2,
+            '787': 49.2,
+            '767': 51.5,
+            'A320': 45.6,
+            'A321': 47.3,
+            'A330': 52.3,
+            'A350': 49.8,
+            'A380': 80.5
+        };
+
+        // Emisiones de metano por vaca en kg por año
+        const methanePerCowPerYear = 100;
+        // Potencial de calentamiento global del metano (GWP)
+        const methaneGWP = 30; 
+
+        if (miles && miles > 0) {
+            const co2PerMile = co2EmissionsPerModel[selectedModel];
+            if (co2PerMile) {
+                const totalCO2 = miles * co2PerMile;
+                // Calcula el equivalente en vacas para el metano producido
+                const co2EquivalentPerCow = methanePerCowPerYear * methaneGWP;
+                const cowsNeeded = totalCO2 / co2EquivalentPerCow;
+
+                // Generar el HTML para mostrar el resultado
+                let resultHTML = `
+                    <p>Emisiones de CO2 para ${miles} millas de vuelo en un ${selectedModel}: ${totalCO2.toFixed(2)} kg</p>
+                    <p>Número de vacas necesarias para producir metano equivalente: ${cowsNeeded.toFixed(2)}</p>
+                `;
+                
+                // Añadir imágenes de vacas
+                const cowsImagesHTML = generateCowImages(Math.ceil(cowsNeeded / 10));
+                resultHTML += cowsImagesHTML;
+
+                document.getElementById('result').innerHTML = resultHTML;
+            } else {
+                document.getElementById('result').innerHTML = '<p>Por favor, seleccione un modelo de avión válido.</p>';
+            }
+        } else {
+            document.getElementById('result').innerHTML = '<p>Por favor, ingrese un número válido de millas.</p>';
+        }
+    }
+
+    function generateCowImages(count) {
+        let imagesHTML = '';
+        for (let i = 0; i < count; i++) {
+            imagesHTML += '<img class="cow-img" src="cow.png" alt="cow">';
+        }
+        return imagesHTML;
+    }
+</script>
+
+</body>
+</html>

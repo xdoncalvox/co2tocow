@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO2排放计算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+        }
+        .cow-img {
+            width: 50px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>CO2排放计算器</h2>
+    <label for="miles">请输入飞行里程：</label>
+    <input type="number" id="miles" name="miles">
+    
+    <label for="model">请选择飞机型号：</label>
+    <select id="model">
+        <option value="737">波音 737</option>
+        <option value="777">波音 777</option>
+        <option value="787">波音 787 Dreamliner</option>
+        <option value="767">波音 767</option>
+        <option value="A320">空客 A320</option>
+        <option value="A321">空客 A321</option>
+        <option value="A330">空客 A330</option>
+        <option value="A350">空客 A350</option>
+        <option value="A380">空客 A380</option>
+    </select>
+
+    <button onclick="calculateEmissions()">计算</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    function calculateEmissions() {
+        const miles = document.getElementById('miles').value;
+        const selectedModel = document.getElementById('model').value;
+
+        // 每个飞机型号的CO2排放量（千克每英里）
+        const co2EmissionsPerModel = {
+            '737': 47.85,
+            '777': 55.2,
+            '787': 49.2,
+            '767': 51.5,
+            'A320': 45.6,
+            'A321': 47.3,
+            'A330': 52.3,
+            'A350': 49.8,
+            'A380': 80.5
+        };
+
+        // 每头牛每年的甲烷排放量（千克每头牛每年）
+        const methanePerCowPerYear = 100;
+        // 甲烷的全球变暖潜值（GWP）
+        const methaneGWP = 30; 
+
+        if (miles && miles > 0) {
+            const co2PerMile = co2EmissionsPerModel[selectedModel];
+            if (co2PerMile) {
+                const totalCO2 = miles * co2PerMile;
+                // 计算等效的牛产生的甲烷
+                const co2EquivalentPerCow = methanePerCowPerYear * methaneGWP;
+                const cowsNeeded = totalCO2 / co2EquivalentPerCow;
+
+                // 生成显示结果的HTML
+                let resultHTML = `
+                    <p>飞行${miles}英里的CO2排放量，使用${selectedModel}飞机：${totalCO2.toFixed(2)}公斤</p>
+                    <p>需要的牛数量产生等效的甲烷：${cowsNeeded.toFixed(2)}</p>
+                `;
+                
+                // 添加牛的图片
+                const cowsImagesHTML = generateCowImages(Math.ceil(cowsNeeded / 10));
+                resultHTML += cowsImagesHTML;
+
+                document.getElementById('result').innerHTML = resultHTML;
+            } else {
+                document.getElementById('result').innerHTML = '<p>请选择有效的飞机型号。</p>';
+            }
+        } else {
+            document.getElementById('result').innerHTML = '<p>请输入有效的飞行里程。</p>';
+        }
+    }
+
+    function generateCowImages(count) {
+        let imagesHTML = '';
+        for (let i = 0; i < count; i++) {
+            imagesHTML += '<img class="cow-img" src="cow.png" alt="Cow">';
+        }
+        return imagesHTML;
+    }
+</script>
+
+</body>
+</html>
