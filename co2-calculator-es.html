@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Emisiones de CO2</title>
+    <title>Product Origin Calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,21 +13,11 @@
             max-width: 500px;
             margin: 0 auto;
         }
-        input[type="number"], select {
+        select, button {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
             box-sizing: border-box;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
         }
         .result {
             margin-top: 20px;
@@ -41,39 +31,62 @@
         }
     </style>
 </head>
-<body>
+<body onload="getLocation()">
 
-<div class="container">
-    <h2>Calculadora de Emisiones de CO2</h2>
-    <label for="miles">Ingrese las millas de vuelo:</label>
-    <input type="number" id="miles" name="miles">
+    <div class="container">
+        <h2>CO2 Emissions Calculator</h2>
+
+        <p>
+        <label for="country">Your country:</label>
+        <select id="country"></select>        
+        </p>
+        <p>
+        <label for="product">Select a product:</label>
+        <select id="product">
+            <option value="" disabled selected>Select a product</option>
+            <option value="avocado">Avocado</option>
+            <option value="banana">Banana</option>
+            <option value="lettuce">Lettuce</option>
+            <option value="lemon">Lemon</option>
+            <option value="cucumber">Cucumber</option>
+        </select>
+        </p>
+        <div class="container">
+            <div class="result" id="result2"></div>
+        </div>
+        <p>
+        <label for="miles">Flight miles:</label>
+        <input type="number" id="miles" name="miles" disabled>
+        </p>
+        <p>
+        <label for="model">Select aircraft model:</label>
+        <select id="model">
+            <option value="737">Boeing 737</option>
+            <option value="777">Boeing 777</option>
+            <option value="787">Boeing 787 Dreamliner</option>
+            <option value="767">Boeing 767</option>
+            <option value="A320">Airbus A320</option>
+            <option value="A321">Airbus A321</option>
+            <option value="A330">Airbus A330</option>
+            <option value="A350">Airbus A350</option>
+            <option value="A380">Airbus A380</option>
+        </select>
+        </p>
+
     
-    <label for="model">Seleccione el modelo de avión:</label>
-    <select id="model">
-        <option value="737">Boeing 737</option>
-        <option value="777">Boeing 777</option>
-        <option value="787">Boeing 787 Dreamliner</option>
-        <option value="767">Boeing 767</option>
-        <option value="A320">Airbus A320</option>
-        <option value="A321">Airbus A321</option>
-        <option value="A330">Airbus A330</option>
-        <option value="A350">Airbus A350</option>
-        <option value="A380">Airbus A380</option>
-    </select>
+        <div class="result" id="result1"></div>
+    </div>
 
-    <button onclick="calculateEmissions()">Calcular</button>
 
-    <div class="result" id="result"></div>
-</div>
 
 <script>
     function calculateEmissions() {
         const miles = document.getElementById('miles').value;
         const selectedModel = document.getElementById('model').value;
 
-        // Emisiones de CO2 por modelo de avión
+        // CO2 emissions per aircraft model (kg CO2 per mile)
         const co2EmissionsPerModel = {
-            '737': 47.85, // kg de CO2 por milla
+            '737': 47.85,
             '777': 55.2,
             '787': 49.2,
             '767': 51.5,
@@ -84,44 +97,391 @@
             'A380': 80.5
         };
 
-        // Emisiones de metano por vaca en kg por año
+        // Methane emissions per cow per year (kg CH4 per cow per year)
         const methanePerCowPerYear = 100;
-        // Potencial de calentamiento global del metano (GWP)
+        // Methane's global warming potential (GWP)
         const methaneGWP = 30; 
 
         if (miles && miles > 0) {
             const co2PerMile = co2EmissionsPerModel[selectedModel];
             if (co2PerMile) {
                 const totalCO2 = miles * co2PerMile;
-                // Calcula el equivalente en vacas para el metano producido
+                // Calculate equivalent cows for methane produced
                 const co2EquivalentPerCow = methanePerCowPerYear * methaneGWP;
                 const cowsNeeded = totalCO2 / co2EquivalentPerCow;
 
-                // Generar el HTML para mostrar el resultado
+                // Generate HTML to display the result
                 let resultHTML = `
-                    <p>Emisiones de CO2 para ${miles} millas de vuelo en un ${selectedModel}: ${totalCO2.toFixed(2)} kg</p>
-                    <p>Número de vacas necesarias para producir metano equivalente: ${cowsNeeded.toFixed(2)}</p>
+                    <p>CO2 emissions for ${miles} flight miles in a ${selectedModel}: ${totalCO2.toFixed(2)} kg</p>
+                    <p>Number of cows needed to produce equivalent methane: ${cowsNeeded.toFixed(2)}</p>
                 `;
                 
-                // Añadir imágenes de vacas
+                // Add cow images
                 const cowsImagesHTML = generateCowImages(Math.ceil(cowsNeeded / 10));
                 resultHTML += cowsImagesHTML;
 
-                document.getElementById('result').innerHTML = resultHTML;
+                document.getElementById('result1').innerHTML = resultHTML;
             } else {
-                document.getElementById('result').innerHTML = '<p>Por favor, seleccione un modelo de avión válido.</p>';
+                document.getElementById('result1').innerHTML = '<p>Please select a valid aircraft model.</p>';
             }
         } else {
-            document.getElementById('result').innerHTML = '<p>Por favor, ingrese un número válido de millas.</p>';
+            document.getElementById('result1').innerHTML = '<p>Please enter a valid number of miles.</p>';
         }
     }
 
     function generateCowImages(count) {
         let imagesHTML = '';
         for (let i = 0; i < count; i++) {
-            imagesHTML += '<img class="cow-img" src="cow.png" alt="cow">';
+            imagesHTML += '<img class="cow-img" src="cow.png" alt="Cow">';
         }
         return imagesHTML;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        populateCountries();
+        getLocation();
+        document.getElementById('product').addEventListener('change', function() {
+            const product = this.value;
+            const countrySelect = document.getElementById('country');
+            const selectedCountry = countrySelect.options[countrySelect.selectedIndex].text;
+            const userLatLon = countrySelect.value.split(',');
+            const userLat = parseFloat(userLatLon[0]);
+            const userLon = parseFloat(userLatLon[1]);
+            calculateDistance(product, userLat, userLon, selectedCountry);
+        });
+    });
+
+    function populateCountries() {
+        const countries = {
+            "United States": [40.7128, -74.0060],
+            "Afganistán": [65.9979, 33.8179], 
+            "Albania": [20.0708, 41.1389], 
+            "Antártida": [22.8986, -79.9284], 
+            "Argelia": [2.6825, 28.1467], 
+            "Samoa Americana": [-170.7284, -14.304], 
+            "Andorra": [1.5914, 42.5422], 
+            "Angola": [17.5818, -12.3604], 
+            "Antigua y Barbuda": [-61.8097, 17.0785], 
+            "Azerbaiyán": [47.6875, 40.3449], 
+            "Argentina": [-63.5885, -31.5807], 
+            "Australia": [134.3612, -25.5817], 
+            "Austria": [14.1373, 47.5847], 
+            "Las Bahamas": [-76.6112, 24.2543], 
+            "Bahrein": [50.5474, 26.0546], 
+            "Bangladesh": [90.2518, 23.8479], 
+            "Armenia": [44.9184, 40.3035], 
+            "Barbados": [-59.5555, 13.167], 
+            "Bélgica": [4.6593, 50.6429], 
+            "Bermudas": [-64.7663, 32.2994], 
+            "Bhután": [90.4666, 27.383], 
+            "Estado Plurinacional de Bolivia": [-64.6743, -16.7156], 
+            "Bosnia y Herzegovina": [17.7899, 44.1624], 
+            "Botswana": [23.8028, -22.1802], 
+            "Isla Bouvet": [3.3671, -54.4229], 
+            "Brasil": [-53.0849, -10.7672], 
+            "Belice": [-88.7141, 17.1903], 
+            "El Territorio Británico del Océano Índico": [72.4196, -7.3149], 
+            "Islas Salomón": [159.6008, -8.8995], 
+            "Islas Vírgenes británicas": [-64.5158, 18.5115], 
+            "Brunei Darussalam": [114.6023, 4.5553], 
+            "Bulgaria": [25.235, 42.7546], 
+            "Myanmar": [96.501, 21.2369], 
+            "Burundi": [29.8912, -3.3741], 
+            "Belarús": [28.0284, 53.5308], 
+            "Camboya": [104.9152, 12.7146], 
+            "Camerún": [12.7363, 5.6658], 
+            "Canadá": [-101.8126, 57.6978], 
+            "Cabo Verde": [-23.9802, 15.9412], 
+            "Las Islas Caimán": [-81.2119, 19.323], 
+            "La República Centroafricana": [20.9507, 7.0012], 
+            "Sri Lanka": [80.7079, 7.6065], 
+            "Chad": [18.6701, 15.344], 
+            "Chile": [-69.1554, -22.9087], 
+            "China": [104.1494, 32.3102], 
+            "Isla de Navidad": [105.6473, -10.4806], 
+            "Las Islas Cocos / Keeling": [96.8545, -12.1447], 
+            "Colombia": [-73.0781, 3.8983], 
+            "Las Comoras": [43.3442, -11.6063], 
+            "El Congo": [15.2674, -0.839], 
+            "La República Democrática del Congo": [23.6559, -2.8703], 
+            "Las Islas Cook": [-158.9782, -19.2114], 
+            "Costa Rica": [-84.1701, 9.9959], 
+            "Croacia": [16.4894, 43.756], 
+            "Cuba": [-79.3227, 21.9946], 
+            "Chipre": [33.1739, 35.0284], 
+            "República Checa": [15.3276, 49.7382], 
+            "Benin": [2.3384, 9.6486], 
+            "Denmark": [9.3193, 56.0271], 
+            "Dominica": [-61.3474, 15.4111], 
+            "La República Dominicana": [-70.5106, 18.9012], 
+            "Ecuador": [-78.3577, -1.4201], 
+            "El Salvador": [-88.887, 13.7413], 
+            "Guinea Ecuatorial": [10.4688, 1.5921], 
+            "Etiopía": [39.6403, 8.6307], 
+            "Eritrea": [38.132, 16.1236], 
+            "Estonia": [25.8548, 58.6709], 
+            "Las Islas Feroe": [-6.9815, 62.1202], 
+            "Las Islas Malvinas [Falkland]": [-58.7523, -51.7388], 
+            "La Georgia del Sur y las Islas Sandwich del Sur": [-36.2044, -54.6015], 
+            "Fiji": [177.9517, -17.8274], 
+            "Finlandia": [26.2795, 64.4974], 
+            "Francia": [2.5059, 46.6183], 
+            "Polinesia Francesa": [-145.2486, -15.4228], 
+            "Las Tierras Australes Francesas": [69.2169, -49.3089], 
+            "Djibouti": [42.2053, 11.6033], 
+            "Gabón": [11.7646, -0.6157], 
+            "Georgia": [43.2962, 42.0572], 
+            "La Gambia": [-16.0613, 13.3811], 
+            "Estado de Palestina": [35.2786, 31.9693], 
+            "Alemania": [10.3767, 51.0771], 
+            "Ghana": [-1.1985, 7.9616], 
+            "Gibraltar": [-5.3461, 36.1432], 
+            "Kiribati": [-157.4016, 1.8716], 
+            "Grecia": [22.5402, 39.4982], 
+            "Groenlandia": [-41.388, 74.7663], 
+            "Granada": [-61.6809, 12.1196], 
+            "Guam": [144.717, 13.3633], 
+            "Guatemala": [-91.2288, 15.0125], 
+            "Guinea": [-11.3051, 11.0087], 
+            "Guyana": [-58.9618, 4.803], 
+            "Haití": [-72.3646, 18.3858], 
+            "Isla Heard e Islas McDonald": [73.5251, -53.1095], 
+            "La Santa Sede": [12.4528, 41.9035], 
+            "Honduras": [-86.6222, 14.8298], 
+            "Hong Kong": [114.1142, 22.4349], 
+            "Hungría": [19.4066, 47.1616], 
+            "Islandia": [-18.8569, 64.756], 
+            "India": [79.4676, 22.349], 
+            "Indonesia": [117.2774, -2.2261], 
+            "República islámica de Irán": [54.3046, 32.5758], 
+            "Iraq": [43.7557, 33.0425], 
+            "Irlanda": [-8.0902, 53.1794], 
+            "Israel": [34.6195, 31.0661], 
+            "Italia": [12.5322, 42.837], 
+            "Costa de Marfil": [-5.5466, 7.6188], 
+            "Jamaica": [-77.3447, 18.1775], 
+            "Japón": [139.1928, 36.6179], 
+            "Kazajstán": [67.3115, 48.1522], 
+            "Jordania": [37.079, 30.6751], 
+            "Kenya": [37.8606, 0.5355], 
+            "La República Popular Democrática de Corea": [127.1899, 40.1298], 
+            "la República de Corea": [127.879, 36.467], 
+            "Kuwait": [47.4932, 29.4908], 
+            "Kirguistán": [74.5847, 41.4529], 
+            "La República Democrática Popular Lao": [101.9624, 20.2365], 
+            "Líbano": [35.8942, 33.9289], 
+            "Lesotho": [28.2551, -29.5776], 
+            "Letonia": [26.382, 56.6829], 
+            "Liberia": [-9.3276, 6.4433], 
+            "Libia": [18.0429, 27.0102], 
+            "Liechtenstein": [9.5534, 47.1383], 
+            "Lituania": [23.9197, 55.3351], 
+            "Luxemburgo": [6.0943, 49.771], 
+            "Macao": [113.5458, 22.1975], 
+            "Madagascar": [46.6955, -19.408], 
+            "Malawi": [35.1203, -15.2608], 
+            "Malasia": [114.4128, 2.8757], 
+            "Maldivas": [73.2207, 3.8486], 
+            "Malí": [-3.5043, 17.3709], 
+            "Malta": [14.4312, 35.886], 
+            "Mauritania": [-10.3164, 20.2616], 
+            "Mauricio": [57.576, -20.2772], 
+            "México": [-102.5173, 23.9467], 
+            "Mónaco": [7.4188, 43.7342], 
+            "Mongolia": [103.0489, 46.8315], 
+            "La República de Moldova": [28.4593, 47.2109], 
+            "Montenegro": [19.269, 42.7721], 
+            "Montserrat": [-62.1883, 16.7298], 
+            "Marruecos": [-6.2981, 31.8381], 
+            "Mozambique": [38.1448, -14.313], 
+            "Omán": [57.8117, 21.9143], 
+            "Namibia": [17.2178, -22.1429], 
+            "Nauru": [166.9333, -0.5275], 
+            "Nepal": [83.9573, 28.2613], 
+            "Países Bajos": [5.646, 52.2932], 
+            "Curaçao": [-68.875, 12.1191], 
+            "Aruba": [-69.9809, 12.5249], 
+            "San Martín (parte holandesa)": [-63.0545, 18.0363], 
+            "Bonaire,  San Eustaquio y Saba": [-68.3079, 12.227], 
+            "Nueva Caledonia": [165.5312, -21.3948], 
+            "Vanuatu": [167.7031, -16.1959], 
+            "Nueva Zelandia": [170.4403, -44.0131], 
+            "Nicaragua": [-85.0476, 12.8404], 
+            "El Níger": [9.413, 17.4338], 
+            "Nigeria": [8.0851, 9.5853], 
+            "Niue": [-169.8584, -19.0524], 
+            "Isla Norfolk": [167.953, -29.034], 
+            "Noruega": [11.4948, 61.7103], 
+            "Las Islas Marianas del Norte": [145.6042, 15.7746], 
+            "Las Islas Ultramarinas Menores de los Estados Unidos": [-162.4606, 6.4102], 
+            "Estados Federados de Micronesia": [158.2287, 6.8797], 
+            "Las Islas Marshall": [168.5277, 6.7211], 
+            "Palau": [134.5611, 7.4841], 
+            "Pakistán": [68.8049, 29.3982], 
+            "Panamá": [-80.1223, 8.8084], 
+            "Papua Nueva Guinea": [144.2141, -6.5913], 
+            "Paraguay": [-58.4232, -23.2139], 
+            "Perú": [-71.8526, -13.5597], 
+            "Las Filipinas": [122.8671, 11.7347], 
+            "Pitcairn": [-128.3241, -24.3755], 
+            "Polonia": [19.4066, 52.1309], 
+            "Portugal": [-7.9703, 39.6868], 
+            "Guinea Bissau": [-14.4508, 12.1029], 
+            "Timor-Leste": [125.9334, -8.7999], 
+            "Puerto Rico": [-66.4716, 18.2326], 
+            "Qatar": [51.1943, 25.2708], 
+            "Rumania": [24.9778, 45.8361], 
+            "La Federación de Rusia": [99.124, 61.6334], 
+            "Rwanda": [29.9308, -1.9764], 
+            "San Bartolomé": [-62.822, 17.8973], 
+            "Santa Elena,  Ascensión y Tristán de Acuña": [-10.4275, -25.4529], 
+            "San Cristóbal y Nieves": [-62.7818, 17.3517], 
+            "Anguila": [-63.0376, 18.2241], 
+            "Santa Lucía": [-60.97, 13.8898], 
+            "San Pedro y Miquelón": [-56.3272, 47.0362], 
+            "San Vicente y las Granadinas": [-61.1881, 13.2531], 
+            "San Marino": [12.471, 43.9314], 
+            "Santo Tomé y Príncipe": [6.5977, 0.2355], 
+            "Arabia Saudita": [44.5537, 24.1338], 
+            "Senegal": [-14.4462, 14.367], 
+            "Serbia": [20.8129, 44.0309], 
+            "Seychelles": [51.8358, -6.6938], 
+            "Sierra leona": [-11.7847, 8.5529], 
+            "Singapur": [103.8394, 1.3262], 
+            "Eslovaquia": [19.4741, 48.7042], 
+            "Vietnam": [107.5701, 11.5307], 
+            "Eslovenia": [14.8169, 46.1277], 
+            "Somalia": [46.1155, 4.3774], 
+            "Sudáfrica": [24.6736, -29.9966], 
+            "Zimbabwe": [29.8678, -19.0019], 
+            "España": [-3.5521, 40.3816], 
+            "Sudán del Sur": [30.3267, 7.2866], 
+            "El Sudán": [29.9584, 16.0343], 
+            "Sahara Occidental": [-13.1416, 24.6678], 
+            "Suriname": [-55.9045, 4.1428], 
+            "Svalbard y Jan Mayen": [13.4842, 78.8376], 
+            "Swazilandia": [31.5155, -26.5825], 
+            "Suecia": [14.4445, 60.6418], 
+            "Suiza": [8.2129, 46.9548], 
+            "República Árabe Siria": [38.4987, 35.0077], 
+            "Tayikistán": [69.4202, 38.5046], 
+            "Tailandia": [101.0305, 15.1496], 
+            "Togo": [0.9785, 8.548], 
+            "Tokelau": [-171.8539, -9.193], 
+            "Tonga": [-174.8472, -19.859], 
+            "Trinidad y Tobago": [-61.267, 10.4364], 
+            "Los Emiratos Árabes Unidos": [53.9824, 23.4656], 
+            "Túnez": [9.5549, 33.7421], 
+            "Turquía": [35.4709, 38.9923], 
+            "Turkmenistán": [59.4192, 39.1055], 
+            "Las Islas Turcas y Caicos": [-71.8562, 21.7501], 
+            "Tuvalu": [178.6907, -7.477], 
+            "Uganda": [32.389, 1.2776], 
+            "Ucrania": [31.3628, 49.0322], 
+            "La ex República Yugoslava de Macedonia": [21.6966, 41.5981], 
+            "Egipto": [29.759, 26.5649], 
+            "Reino Unido": [-2.1086, 53.2786], 
+            "Guernsey": [-2.5794, 49.456], 
+            "Jersey": [-2.1302, 49.2236], 
+            "Isla de Man": [-4.5444, 54.2285], 
+            "República Unida de Tanzania": [34.802, -6.2595], 
+            "Los Estados Unidos de América": [-99.1943, 39.537], 
+            "Islas Vírgenes de los Estados Unidos": [-64.7971, 17.7318], 
+            "Burkina Faso": [-1.7352, 12.2722], 
+            "Uruguay": [-56.0061, -32.8049], 
+            "Uzbekistán": [64.3964, 41.2698], 
+            "República Bolivariana de Venezuela": [-66.1542, 7.1089], 
+            "Wallis y Futuna": [-177.1944, -13.8292], 
+            "Samoa": [-172.4412, -13.621], 
+            "Yemen": [45.2867, 15.1859], 
+            "Zambia": [27.8238, -14.6349]
+        };
+        const countrySelect = document.getElementById('country');
+        for (const [country, coords] of Object.entries(countries)) {
+            const option = document.createElement('option');
+            option.value = coords;
+            option.text = country;
+            countrySelect.add(option);
+        }
+        // Set default to United States (New York)
+        countrySelect.value = countries["United States"];
+    }
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const userLat = position.coords.latitude;
+                const userLon = position.coords.longitude;
+                reverseGeocode(userLat, userLon);
+            }, function() {
+                // User denied geolocation, default to United States (New York)
+                const countrySelect = document.getElementById('country');
+                countrySelect.value = "40.7128,-74.0060";
+            });
+        } else {
+            // Geolocation not supported, default to United States (New York)
+            const countrySelect = document.getElementById('country');
+            countrySelect.value = "40.7128,-74.0060";
+        }
+    }
+
+    function reverseGeocode(lat, lon) {
+        const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const country = data.countryName;
+                const countrySelect = document.getElementById('country');
+                for (let i = 0; i < countrySelect.options.length; i++) {
+                    if (countrySelect.options[i].text === country) {
+                        countrySelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            })
+            .catch(() => {
+                // Fallback to default United States (New York)
+                const countrySelect = document.getElementById('country');
+                countrySelect.value = "40.7128,-74.0060";
+            });
+    }
+
+    function calculateDistance(product, userLat, userLon, selectedCountry) {
+        const productData = {
+            avocado: { country: 'Mexico', lat: 23.6345, lon: -102.5528 },
+            banana: { country: 'Ecuador', lat: -78.3577, lon: -1.4201 },
+            lettuce: { country: 'China', lat: 35.8617, lon: 104.1954 },
+            lemon: { country: 'India', lat: 20.5937, lon: 78.9629 },
+            cucumber: { country: 'China', lat: 35.8617, lon: 104.1954 }
+        };
+
+        const { country, lat, lon } = productData[product];
+        const distance = getDistanceFromLatLonInKm(userLat, userLon, lat, lon);
+        document.getElementById('result2').innerHTML = `
+            <p>Principal producing country for ${product}: ${country}</p>
+            <p>Distance from ${selectedCountry} to ${country}: ${distance.toFixed(2)} km</p>
+        `;
+        const flightMiles = document.getElementById('miles');
+        flightMiles.value = distance.toFixed(2);
+        calculateEmissions();
+
+    }
+
+    function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Radius of the earth in km
+        const dLat = deg2rad(lat2 - lat1);
+        const dLon = deg2rad(lon2 - lon1);
+        const a = 
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // Distance in km
+    }
+
+    function deg2rad(deg) {
+        return deg * (Math.PI / 180);
     }
 </script>
 
