@@ -55,8 +55,8 @@
             <div class="result" id="result2"></div>
         </div>
         <p>
-        <label for="miles">Enter flight miles:</label>
-        <input type="number" id="miles" name="miles">
+        <label for="miles">Flight miles:</label>
+        <input type="number" id="miles" name="miles" disabled>
         </p>
         <p>
         <label for="model">Select aircraft model:</label>
@@ -72,7 +72,7 @@
             <option value="A380">Airbus A380</option>
         </select>
         </p>
-        <button onclick="calculateEmissions()">Calculate</button>
+
     
         <div class="result" id="result1"></div>
     </div>
@@ -463,7 +463,9 @@
             <p>Distance from ${selectedCountry} to ${country}: ${distance.toFixed(2)} km</p>
         `;
         const flightMiles = document.getElementById('miles');
-        flightMiles.value = distance.toFixed(2)
+        flightMiles.value = distance.toFixed(2);
+        calculateEmissions();
+
     }
 
     function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
