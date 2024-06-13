@@ -25,29 +25,118 @@
             background-color: #f1f1f1;
             border: 1px solid #ddd;
         }
+        .cow-img {
+            width: 50px;
+            margin: 5px;
+        }
     </style>
 </head>
 <body onload="getLocation()">
 
-<div class="container">
-    <h2>Product Origin Calculator</h2>
-    <label for="country">Your country:</label>
-    <select id="country"></select>
+    <div class="container">
+        <h2>CO2 Emissions Calculator</h2>
 
-    <label for="product">Select a product:</label>
-    <select id="product">
-        <option value="" disabled selected>Select a product</option>
-        <option value="avocado">Avocado</option>
-        <option value="banana">Banana</option>
-        <option value="lettuce">Lettuce</option>
-        <option value="lemon">Lemon</option>
-        <option value="cucumber">Cucumber</option>
-    </select>
+        <p>
+        <label for="country">Your country:</label>
+        <select id="country"></select>        
+        </p>
+        <p>
+        <label for="product">Select a product:</label>
+        <select id="product">
+            <option value="" disabled selected>Select a product</option>
+            <option value="avocado">Avocado</option>
+            <option value="banana">Banana</option>
+            <option value="lettuce">Lettuce</option>
+            <option value="lemon">Lemon</option>
+            <option value="cucumber">Cucumber</option>
+        </select>
+        </p>
+        <div class="container">
+            <div class="result" id="result2"></div>
+        </div>
+        <p>
+        <label for="miles">Enter flight miles:</label>
+        <input type="number" id="miles" name="miles">
+        </p>
+        <p>
+        <label for="model">Select aircraft model:</label>
+        <select id="model">
+            <option value="737">Boeing 737</option>
+            <option value="777">Boeing 777</option>
+            <option value="787">Boeing 787 Dreamliner</option>
+            <option value="767">Boeing 767</option>
+            <option value="A320">Airbus A320</option>
+            <option value="A321">Airbus A321</option>
+            <option value="A330">Airbus A330</option>
+            <option value="A350">Airbus A350</option>
+            <option value="A380">Airbus A380</option>
+        </select>
+        </p>
+        <button onclick="calculateEmissions()">Calculate</button>
+    
+        <div class="result" id="result1"></div>
+    </div>
 
-    <div class="result" id="result"></div>
-</div>
+
 
 <script>
+    function calculateEmissions() {
+        const miles = document.getElementById('miles').value;
+        const selectedModel = document.getElementById('model').value;
+
+        // CO2 emissions per aircraft model (kg CO2 per mile)
+        const co2EmissionsPerModel = {
+            '737': 47.85,
+            '777': 55.2,
+            '787': 49.2,
+            '767': 51.5,
+            'A320': 45.6,
+            'A321': 47.3,
+            'A330': 52.3,
+            'A350': 49.8,
+            'A380': 80.5
+        };
+
+        // Methane emissions per cow per year (kg CH4 per cow per year)
+        const methanePerCowPerYear = 100;
+        // Methane's global warming potential (GWP)
+        const methaneGWP = 30; 
+
+        if (miles && miles > 0) {
+            const co2PerMile = co2EmissionsPerModel[selectedModel];
+            if (co2PerMile) {
+                const totalCO2 = miles * co2PerMile;
+                // Calculate equivalent cows for methane produced
+                const co2EquivalentPerCow = methanePerCowPerYear * methaneGWP;
+                const cowsNeeded = totalCO2 / co2EquivalentPerCow;
+
+                // Generate HTML to display the result
+                let resultHTML = `
+                    <p>CO2 emissions for ${miles} flight miles in a ${selectedModel}: ${totalCO2.toFixed(2)} kg</p>
+                    <p>Number of cows needed to produce equivalent methane: ${cowsNeeded.toFixed(2)}</p>
+                `;
+                
+                // Add cow images
+                const cowsImagesHTML = generateCowImages(Math.ceil(cowsNeeded / 10));
+                resultHTML += cowsImagesHTML;
+
+                document.getElementById('result1').innerHTML = resultHTML;
+            } else {
+                document.getElementById('result1').innerHTML = '<p>Please select a valid aircraft model.</p>';
+            }
+        } else {
+            document.getElementById('result1').innerHTML = '<p>Please enter a valid number of miles.</p>';
+        }
+    }
+
+    function generateCowImages(count) {
+        let imagesHTML = '';
+        for (let i = 0; i < count; i++) {
+            imagesHTML += '<img class="cow-img" src="cow.png" alt="Cow">';
+        }
+        return imagesHTML;
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         populateCountries();
         getLocation();
@@ -369,10 +458,12 @@
 
         const { country, lat, lon } = productData[product];
         const distance = getDistanceFromLatLonInKm(userLat, userLon, lat, lon);
-        document.getElementById('result').innerHTML = `
+        document.getElementById('result2').innerHTML = `
             <p>Principal producing country for ${product}: ${country}</p>
             <p>Distance from ${selectedCountry} to ${country}: ${distance.toFixed(2)} km</p>
         `;
+        const flightMiles = document.getElementById('miles');
+        flightMiles.value = distance.toFixed(2)
     }
 
     function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
